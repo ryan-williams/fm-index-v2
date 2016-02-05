@@ -1,0 +1,5 @@
+*.o
+.cproject
+.project
+.tm_project*
+*~
