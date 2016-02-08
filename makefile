@@ -7,7 +7,7 @@ CC=gcc
 #CFLAGS = -g -lm -W -Wall -Winline -O9
 
 #these are for maximum speed
-CFLAGS=-g -O3 -lm -fomit-frame-pointer -W -Wall -Winline -DDEBUG=0 -DNDEBUG=1 
+CFLAGS=-g -O3 -lm -fPIC -fomit-frame-pointer -W -Wall -Winline -DDEBUG=0 -DNDEBUG=1 
 
 all: ds_ssortr fm_index.a fm_search fm_build
 pizzachili: all build_index run_queries
@@ -31,6 +31,9 @@ build_index:	build_index.c fm_index.a ds_ssortr
 fm_index.a: fm_mng_bits.o fm_common.o fm_search.o fm_errors.o fm_read.o fm_occurences.o fm_multihuf.o fm_huffman.o fm_extract.o fm_build.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/deep2.o ds_ssort/blind2.o
 	ar rc fm_index.a fm_common.o fm_mng_bits.o fm_search.o fm_build.o fm_errors.o fm_read.o fm_occurences.o fm_multihuf.o fm_huffman.o fm_extract.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/ds.o ds_ssort/globals.o ds_ssort/helped.o ds_ssort/shallow.o ds_ssort/deep2.o ds_ssort/blind2.o
 	
+fm_index.so: ds_ssort.so fm_mng_bits.o fm_common.o fm_search.o fm_errors.o fm_read.o fm_occurences.o fm_multihuf.o fm_huffman.o fm_extract.o fm_build.o
+	$(CC) $(CFLAGS) -o fm_index.so --shared -L. -lds_ssort fm_common.o fm_mng_bits.o fm_search.o fm_build.o fm_errors.o fm_read.o fm_occurences.o fm_multihuf.o fm_huffman.o fm_extract.o
+	
 fm_build.o:	fm_build.c fm_common.o fm_mng_bits.o fm_multihuf.o fm_huffman.o fm_occurences.o 
 
 fm_search.o:	fm_search.c fm_mng_bits.o fm_common.o fm_occurences.o
@@ -52,10 +55,14 @@ fm_occurences.o:	fm_occurences.c fm_mng_bits.o
 fm_extract.o:	fm_extract.c fm_mng_bits.o
 
 clean:	
-	rm -f *.o  fm_index.a *~ *.a ds_ssort/*.a ds_ssort/*.o
+	rm -f *.o  fm_index.a *~ *.a ds_ssort/*.a ds_ssort/*.o *.so ds_ssort/*.so
 	
 release:	
 	make clean; rm -f fm_search fm_build fmi_qshell fmi_bshell bexample ds_ssort/ds ds_ssort/bwt ds_ssort/unbwt ds_ssort/testlcp;
 
 ds_ssortr: 
 	make -C ./ds_ssort/; cp ./ds_ssort/ds_ssort.a .
+
+ds_ssort.so:
+	make -C ./ds_ssort/ ds_ssort.so; cp ./ds_ssort/ds_ssort.so ./libds_ssort.so
+	

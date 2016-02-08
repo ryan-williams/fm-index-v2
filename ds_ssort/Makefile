@@ -3,7 +3,7 @@ SHELL=/bin/sh
 CC=gcc
 
 #these are for testing
-CFLAGS = -g -W -Wall -Winline -O2
+CFLAGS = -g -fPIC -W -Wall -Winline -O2
 
 #these are for maximum speed
 #CFLAGS=-g -O3 -fomit-frame-pointer -W -Wall -Winline \
@@ -21,6 +21,9 @@ ds: suftest2.o ds_ssort.a
 # archive containing the ds sort algorithm
 ds_ssort.a: globals.o ds.o shallow.o deep2.o helped.o blind2.o
 	ar rc ds_ssort.a globals.o ds.o shallow.o deep2.o helped.o blind2.o
+
+ds_ssort.so: globals.o ds.o shallow.o deep2.o helped.o blind2.o
+	$(CC) $(CFLAGS) -o ds_ssort.so --shared globals.o ds.o shallow.o deep2.o helped.o blind2.o
 
 # archive containing the bwt and lcp auxiliary routines 
 bwtlcp.a: bwt_aux.o lcp_aux.o

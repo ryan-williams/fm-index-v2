@@ -3,3 +3,4 @@
 .project
 .tm_project*
 *~
+*.a
